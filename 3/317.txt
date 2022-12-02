@@ -1,0 +1,53 @@
+*-----------------------------------------------------------------------------
+* created using Parts release 7.1p on 08/29/96 at 16:15
+*
+* connections:     input
+*                  |  adjustment pin
+*                  |  |   output
+*                  |  |   |
+.SUBCKT LM317     IN ADJ OUT
+*
+* POSITIVE ADJUSTABLE VOLTAGE REGULATOR
+*
+JADJ IN ADJ ADJ JADJMOD	;ADJUSTMENT PIN CURRENT
+VREF 4 ADJ 1.250
+DBK IN 13 DMOD
+*
+* ZERO OF RIPPLE REJECTION
+*
+*
+*
+CBC 13 15 800.0E-12
+RBC 15 5 1.000E3
+*
+QPASS 13 5 OUT QPASSMOD
+RB1 7 6 1
+RB2 6 5 128.3
+*
+* CURRENT LIMITING
+*
+DSC 6 11 DMOD
+ESC 11 OUT VALUE={5.646-.6667*V(6,5)*V(13,5)}
+*
+* FOLDBACK CURRENT
+*
+DFB 6 12 DMOD
+EFB 12 OUT VALUE={8.822-.4024*V(13,5)+5.250E-3*V(13,5)*V(13,5)
++ -.6667*V(13,5)*V(6,5)}
+*
+EB 7 OUT 8 OUT 6.939
+*
+* ZERO OF OUTPUT IMPEDANCE
+*
+RP 9 8 100
+CPZ 10 OUT 3.183E-6
+*
+DPU 10 OUT DMOD	;POWER-UP CLAMPLING DIODE
+RZ 8 10 .1
+EP 9 OUT 4 OUT 100
+RI OUT 4 100MEG
+*
+.MODEL QPASSMOD NPN (IS=30F BF=50 VAF=1.500 NF=1.701)
+.MODEL JADJMOD NJF (BETA=50.00E-6 VTO=-1)
+.MODEL DMOD D (IS=30F N=1.701)
+.ENDS

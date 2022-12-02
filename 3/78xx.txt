@@ -1,0 +1,106 @@
+..SUBCKT x_LM78XX Input Output Ground PARAMS:
++ Av_feedback=1665, R1_Value=1020
+*
+* SERIES 3-TERMINAL POSITIVE REGULATOR
+*
+* Note: This regulator is based on the LM78XX series of
+* regulators (also the LM140 and LM340). The model
+* will cause some current to flow to Node 0 which
+* is not part of the actual voltage regulator circuit.
+*
+* Band-gap voltage source:
+*
+* The source is off when Vin<3V and fully on when Vin>3.7V.
+* Line regulation and ripple rejection) are set with
+* Rreg= 0.5 * dVin/dVbg. The temperature dependence of this
+* circuit is a quadratic fit to the following points:
+*
+* T Vbg(T)/Vbg(nom)
+* --- ---------------
+* 0 .999
+* 37.5 1
+* 125 .990
+*
+* The temperature coefficient of Rbg is set to 2 * the band gap
+* temperature coefficient. Tnom is assumed to be 27 deg. C and
+* Vnom is 3.7V
+*
+Vbg 100 0 DC 7.4V
+Sbg (100,101),(Input,Ground) Sbg1
+Rbg 101 0 1 TC=1.612E-5,-2.255E-6
+Ebg (102,0),(Input,Ground) 1
+Rreg 102 101 7k
+..MODEL Sbg1 VSWITCH (Ron=1 Roff=1MEG Von=3.7 Voff=3)
+*
+* Feedback stage
+*
+* Diodes D1,D2 limit the excursion of the amplifier
+* outputs to being near the rails. Rfb, Cfb Set the
+* corner frequency for roll-off of ripple rejection.
+ 
+*
+* The opamp gain is given by: Av = (Fores/Freg) * (Vout/Vbg)
+* where Fores = output impedance corner frequency
+* with Cl=0 (typical value about 1MHz)
+* Freg = corner frequency in ripple rejection
+* (typical value about 600 Hz)
+* Vout = regulator output voltage (5,12,15V)
+* Vbg = bandgap voltage (3.7V)
+*
+* Note: Av is constant for all output voltages, but the
+* feedback factor changes. If Av=2250, then the
+* Av*Feedback factor is as given below:
+*
+* Vout Av*Feedback factor
+* ---- ------------------
+* 5 1665
+* 12 694
+* 15 550
+*
+Rfb 9 8 1MEG
+Cfb 8 Ground 265PF
+Eopamp 105 0 VALUE={2250*v(101,0)+Av_feedback*v(Ground,8)}
+Vgainf 200 0 {Av_feedback}
+Rgainf 200 0 1
+*Eopamp 105 0 POLY(3),(101,0),(Ground,8),(200,0) 0 2250 0 0 0 0 0 0 1
+Ro 105 106 1k
+D1 106 108 Dlim
+D2 107 106 Dlim
+..MODEL Dlim D (Vj=0.7)
+Vl1 102 108 DC 1
+Vl2 107 0 DC 1
+*
+* Quiescent current modelling
+*
+* Quiescent current is set by Gq, which draws a current
+* proportional to the voltage drop across the regulator and
+* R1 (temperature coefficient .1%/deg C). R1 must change
+* with output voltage as follows: R1 = R1(5v) * Vout/5v.
+*
+Gq (Input,Ground),(Input,9) 2.0E-5
+R1 9 Ground {R1_Value} TC=0.001
+*
+* Output Stage
+*
+* Rout is used to set both the low frequency output impedence
+* and the load regulation.
+*
+Q1 Input 5 6 Npn1
+Q2 Input 6 7 Npn1 10
+..MODEL Npn1 NPN (Bf=50 Is=1E-14)
+* Efb Input 4 VALUE={v(Input,Ground)+v(0,106)}
+Efb Input 4 POLY(2),(Input,Ground),(0,106) 0 1 1
+Rb 4 5 1k TC=0.003
+Re 6 7 2k
+Rsc 7 9 0.275 TC=1.136E-3,-7.806E-6
+Rout 9 Output 0.008
+*
+* Current Limit
+*
+Rbcl 7 55 290
+Qcl 5 55 9 Npn1
+Rcldz 56 55 10k
+Dz1 56 Input Dz
+..MODEL Dz D (Is=0.05p Rs=3 Bv=7.11 Ibv=0.05u)
+..ENDS
+*$

@@ -1,0 +1,4 @@
+.SUBCKT LM7805C Input Ground Output
+x1 Input Output Ground x_LM78XX PARAMS:
++     Av_feedback=1665, R1_Value=1020
+.ENDS

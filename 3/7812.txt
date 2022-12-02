@@ -1,0 +1,6 @@
+
+*---------------------------------------------------------------LM7812C
+.SUBCKT LM7812C Input Ground Output 
+x1 Input Output Ground x_LM78XX PARAMS:
++     Av_feedback=694, R1_Value=2448
+.ENDS

@@ -1,0 +1,9 @@
+Stray ".ends" card: .ends
+Questionable use of curly braces in "b§eopamp 105 0 v=2250*v(101,0)+{av_feedback}*v(ground,8)"
+    Error: undefined symbol in: "[av_feedback]"
+Questionable use of curly braces in "vgainf 200 0 {av_feedback}"
+    Error: undefined symbol in: "[av_feedback]"
+Questionable use of curly braces in "r1 9 ground {r1_value} tc=0.001"
+    Error: undefined symbol in: "[r1_value]"
+Circuit: .SUBCKT x_LM78XX Input Output Ground PARAMS:  Av_feedback=1665, R1_Value=1020
+
